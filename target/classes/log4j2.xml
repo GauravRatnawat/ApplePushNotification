@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+   <properties>
+            <property name="receipients">saggarwal@q3tech.com, makumar@q3tech.com, gdeorari@q3tech.com</property>
+            <property name="from">firstgroupq3@q3tech.com</property>
+             <property name="subject">Error in FGApplePushNotifications (Iphone)-LIVE</property>
+            <property name="smtpHost">smtp.rediffmailpro.com</property>
+            <property name="smtpPort">587</property>
+            <property name="smtpProtocol">smtp</property>
+            <property name="smtpUser">firstgroupq3@q3tech.com</property>
+            <property name="smtpPassword">Q3techW123</property>
+        </properties>
+
+	<Appenders>
+		<RollingFile name="RollingFile" fileName="logs/FGApplePushNotifications.log"
+			filePattern="logs/FGApplePushNotifications%d{yyyy-MMM-dd}-%i.log">
+			<PatternLayout>
+				<pattern>%d{dd/MMM/yyyy HH:mm:ss,SSS}- %c: %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="100" />
+		</RollingFile>
+		<Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{dd/MMM/yyyy HH:mm:ss,SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+    
+    
+     <!-- appender to send mails (default: error and fatal events)-->
+        <SMTP name="Mailer" 
+          subject="${subject}" to="${receipients}" from="${from}"
+          smtpHost="${smtpHost}" smtpPort="${smtpPort}"
+          smtpProtocol="${smtpProtocol}" smtpUsername="${smtpUser}"
+          smtpPassword="${smtpPassword}" smtpDebug="false" bufferSize="20" >
+
+        <ThresholdFilter level="debug" onMatch="NEUTRAL" onMismatch="DENY" /> 
+        <PatternLayout>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss,SSS} %5p %m%n</pattern>
+        </PatternLayout>
+    </SMTP>
+ <appender name="AsyncMailer" class="org.apache.logging.log4j.AsyncAppender">
+    <param name="BufferSize" value="500"/>
+    <appender-ref ref="Mailer"/>
+</appender> 
+<Async name="AsyncMailer">
+        <AppenderRef ref="Mailer"/>
+    </Async>
+
+  
+	</Appenders>
+	
+	
+        <!-- appender to send mails asynchronously -->
+	
+	<Loggers>
+		<Root level="info" >
+			<AppenderRef ref="RollingFile" />
+			<AppenderRef ref="Console" />
+ 			<AppenderRef ref="AsyncMailer" level="error" />
+		</Root>
+
+	</Loggers>
+</Configuration>
